@@ -1,6 +1,7 @@
 const Post = require('../models/post');
 const express = require("express");
 const multer = require('multer');
+const checkAuth = require('../middleware/check-auth');
 
 const router = express.Router();
 
@@ -27,7 +28,10 @@ const storage = multer.diskStorage({
   }
 });
 
-router.post('',multer({storage: storage}).single("image"),(req, res, next) => {
+router.post(
+  '',
+  checkAuth,
+  multer({storage: storage}).single("image"),(req, res, next) => {
   const url = req.protocol.concat('://', req.get("host"));
   const post = new Post({
     title: req.body.title,
@@ -48,12 +52,22 @@ router.post('',multer({storage: storage}).single("image"),(req, res, next) => {
   });
 });
 
-router.put('/:id', (req, res, next) => {
-  console.log('put');
+router.put(
+  '/:id',
+  checkAuth,
+  multer({storage: storage}).single("image"), (req, res, next) => {
+  let imagePath;
+  imagePath = req.body.imagePath;
+  if(req.file) {
+    const url = req.protocol + "://" + req.get("host");
+    imagePath = url.concat('/images/', req.file.filename);
+  }
+
   const post = new Post({
     _id: req.params.id,
     title: req.body.title,
-    content: req.body.content
+    content: req.body.content,
+    imagePath: imagePath
   });
   Post.updateOne({_id: req.params.id}, post)
     .then(result=> {
@@ -63,13 +77,31 @@ router.put('/:id', (req, res, next) => {
 });
 
 router.get('',(req, res, next) => {
-  Post.find()
+  const pageSize = +req.query.pagesize;
+  const currentPage = +req.query.page;
+  const postQuery = Post.find();
+  let fetchedPosts;
+
+  if(pageSize && currentPage) {
+    postQuery
+      .skip(pageSize * (currentPage - 1))
+      .limit(pageSize);
+  }
+
+  postQuery.find()
     .then(documents => {
-      res.status(200).json({
-        message: 'Success',
-        posts: documents
-      });
-    });
+      fetchedPosts = documents;
+      return Post.count()
+    })
+    .then(count =>
+      res.status(200).json(
+        {
+          message: 'Success',
+          posts: fetchedPosts,
+          total: count
+        }
+      )
+    );
 });
 
 router.get('/:id',(req, res, next) => {
@@ -81,7 +113,10 @@ router.get('/:id',(req, res, next) => {
   });
 });
 
-router.delete('/:id', (req, res, next) => {
+router.delete(
+  '/:id',
+  checkAuth,
+  (req, res, next) => {
   Post.deleteOne({_id: req.params.id})
     .then(result=> console.log(result));
 
