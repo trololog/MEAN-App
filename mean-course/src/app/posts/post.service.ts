@@ -22,7 +22,8 @@ export class PostsService {
               title: post.title,
               content: post.content,
               id: post._id,
-              imagePath: post.imagePath
+              imagePath: post.imagePath,
+              creator: post.creator
             };
           }),
           total: postData.total
@@ -98,7 +99,6 @@ export class PostsService {
   }
 
   private refreshUI() {
-    //this.postsUpdated.next({posts: [...this.posts], postCount: 0});
     this.router.navigate(['/']);
   }
 }

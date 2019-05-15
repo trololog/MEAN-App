@@ -36,7 +36,8 @@ router.post(
   const post = new Post({
     title: req.body.title,
     content: req.body.content,
-    imagePath: url.concat('/images/', req.file.filename)
+    imagePath: url.concat('/images/', req.file.filename),
+    creator: req.userData.userId
   });
 
   post.save().then(createdPost => {
@@ -69,7 +70,7 @@ router.put(
     content: req.body.content,
     imagePath: imagePath
   });
-  Post.updateOne({_id: req.params.id}, post)
+  Post.updateOne({_id: req.params.id, creator: req.userData.userId }, post)
     .then(result=> {
      console.log(result);
       res.status(200).json({message: 'Update successful!'});
