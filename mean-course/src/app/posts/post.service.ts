@@ -4,17 +4,19 @@ import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { environment } from '../../environments/environment';
 
 @Injectable({providedIn: 'root'})
 export class PostsService {
   private posts: Post[] = [];
   private postsUpdated = new Subject<{posts: Post[], postCount: number}>();
+  private URL = environment.apiUrl + '/posts/';
 
   constructor(private http: HttpClient, private router: Router) {}
 
   getPosts(postPerPage: number, currentPage: number) {
     const queryParams = `?pagesize=${postPerPage}&page=${currentPage}`;
-    this.http.get<{message: string, posts: any, total: number}>('http://localhost:3000/api/posts' + queryParams)
+    this.http.get<{message: string, posts: any, total: number}>(this.URL + queryParams)
       .pipe(map((postData) => {
         return {
           posts: postData.posts.map(post => {
@@ -48,7 +50,7 @@ export class PostsService {
     postData.append('image', image, title);
 
     this.http.post<{message: string, post: Post}>(
-      'http://localhost:3000/api/posts',
+      this.URL,
       postData)
       .subscribe(responseData => {
         /*const post: Post = {
@@ -80,7 +82,7 @@ export class PostsService {
       };
     }
 
-    this.http.put('http://localhost:3000/api/posts/' + id, postData)
+    this.http.put(this.URL + id, postData)
       .subscribe((response) => {
         /*const updatedPosts = [...this.posts];
         const oldPostIndex = updatedPosts.findIndex(p => p.id === id);
@@ -97,7 +99,7 @@ export class PostsService {
   }
 
   deletePost(postId: string) {
-    return this.http.delete('http://localhost:3000/api/posts/' + postId);
+    return this.http.delete(this.URL + postId);
   }
 
   getPost(id: string) {
@@ -106,7 +108,7 @@ export class PostsService {
       content: string,
       imagePath: string,
       creator: string}>
-      ('http://localhost:3000/api/posts/' + id);
+      (this.URL + id);
   }
 
   private refreshUI() {

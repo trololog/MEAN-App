@@ -1,0 +1,7 @@
+{
+  "env": {
+    "MONGO_ATLAS_PW": "user1",
+    "JWT_KEY": "secret_phrase_long_long_long",
+    "MONGO_HOST_URL": "mongodb+srv://test_user1:<password>@mylabcluster-cyeic.mongodb.net/test?retryWrites=true"
+  }
+}

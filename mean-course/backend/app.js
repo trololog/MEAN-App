@@ -7,7 +7,7 @@ const path = require('path');
 
 const app = express();
 
-mongoose.connect('mongodb://localhost:27017/blog', {useNewUrlParser: true})
+mongoose.connect(process.env.MONGO_HOST_URL.replace('<password>',process.env.MONGO_ATLAS_PW), {useNewUrlParser: true})
   .then(()=> {
     console.log('Connected to the db');
   })
@@ -18,7 +18,7 @@ mongoose.connect('mongodb://localhost:27017/blog', {useNewUrlParser: true})
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false}));
-app.use("/images", express.static(path.join("backend/images")));
+app.use("/images", express.static(path.join("images")));
 
 app.use((req,res,next) => {
   res.setHeader("Access-Control-Allow-Origin","*");
