@@ -112,6 +112,6 @@ export class PostsService {
   }
 
   private refreshUI() {
-    this.router.navigate(['/']);
+    
   }
 }

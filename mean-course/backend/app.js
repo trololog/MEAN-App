@@ -14,7 +14,7 @@ mongoose.connect(process.env.MONGO_HOST_URL.replace('<password>',process.env.MON
   .catch((error)=>
   {
     console.log(error);
-  });
+});
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false}));
